@@ -1,0 +1,144 @@
+{
+	"pages": [ 
+		{
+			"path": "pages/login/login",
+			"style": {
+				"navigationBarTitleText": "登录"
+			}
+		},
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "首页"
+			}
+		},
+		{
+			"path": "pages/select-patient/select-patient",
+			"style": {
+				"navigationBarTitleText": "选择就诊人"
+			}
+		},
+		{
+			"path": "pages/select-department/select-department",
+			"style": {
+				"navigationBarTitleText": "选择科室"
+			}
+		},
+		{
+			"path": "pages/department/department",
+			"style": {
+				"navigationBarTitleText": "消化内科"
+			}
+		},
+		{
+			"path": "pages/appointment-notice/appointment-notice",
+			"style": {
+				"navigationBarTitleText": "预约须知"
+			}
+		},
+		{
+			"path": "pages/doctor-info/doctor-info",
+			"style": {
+				"navigationBarTitleText": "医生信息"
+			}
+		},
+		{
+			"path": "pages/confirm-appointment/confirm-appointment",
+			"style": {
+				"navigationBarTitleText": "确认预约信息"
+			}
+		},
+		{
+			"path": "pages/appointment-success/appointment-success",
+			"style": {
+				"navigationBarTitleText": "预约成功"
+			}
+		},
+		{
+			"path": "pages/recharge/recharge",
+			"style": {
+				"navigationBarTitleText": "门诊充值"
+			}
+		},
+		{
+			"path": "pages/confirm-payment/confirm-payment",
+			"style": {
+				"navigationBarTitleText": "确认缴费信息"
+			}
+		},
+		{
+			"path": "pages/payment-info/payment-info",
+			"style": {
+				"navigationBarTitleText": "缴费信息"
+			}
+		},
+		{
+			"path": "pages/medical-fee/medical-fee",
+			"style": {
+				"navigationBarTitleText": "门诊费用"
+			}
+		},
+		{
+			"path": "pages/to-be-invoiced/to-be-invoiced",
+			"style": {
+				"navigationBarTitleText": "待开具电子发票"
+			}
+		},
+		{
+			"path": "pages/invoice-success/invoice-success",
+			"style": {
+				"navigationBarTitleText": "开票成功"
+			}
+		},
+		{
+			"path": "pages/invoiced/invoiced",
+			"style": {
+				"navigationBarTitleText": "已开具电子发票"
+			}
+		},
+		{
+			"path": "pages/payment/payment",
+			"style": {
+				"navigationBarTitleText": "自助缴费"
+			}
+		},
+		{
+			"path": "pages/personal/personal",
+			"style": {
+				"navigationBarTitleText": "个人中心"
+			}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "医疗预约挂号系统",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8"
+	},
+	"tabBar": {
+		"color": "#999999",
+		"selectedColor": "#007AFF",
+		"backgroundColor": "#ffffff",
+		"borderStyle": "black",
+		"list": [
+			{
+				"pagePath": "pages/index/index",
+				"iconPath": "static/icon/shouye-zhihui.png",
+				"selectedIconPath": "static/icon/shouye-zhihui.png",
+				"text": "首页"
+			},
+			{
+				"pagePath": "pages/payment/payment",
+				"iconPath": "static/icon/shouye-zhihui.png",
+				"selectedIconPath": "static/icon/shouye-zhihui.png",
+				"text": "缴费"
+			},
+			{
+				"pagePath": "pages/personal/personal",
+				"iconPath": "static/icon/shouye-zhihui.png",
+				"selectedIconPath": "static/icon/shouye-zhihui.png",
+				"text": "个人中心"
+			}
+		]
+	}
+}

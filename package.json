@@ -1,0 +1,18 @@
+{
+  "name": "medical-appointment",
+  "version": "1.0.0",
+  "description": "医疗预约挂号系统",
+  "scripts": {
+    "dev:mp-weixin": "uni build --watch --platform mp-weixin",
+    "build:mp-weixin": "uni build --platform mp-weixin"
+  },
+  "dependencies": {
+    "@dcloudio/uni-app": "^3.0.0",
+    "@dcloudio/uni-ui": "^1.0.0"
+  },
+  "devDependencies": {
+    "@dcloudio/cli": "^3.0.0",
+    "@dcloudio/types": "^3.0.0",
+    "vue": "^3.0.0"
+  }
+}

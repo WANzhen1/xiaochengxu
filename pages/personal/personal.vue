@@ -1,0 +1,131 @@
+<template>
+	<view class="container">
+		<view class="user-info">
+			<view class="avatar"></view>
+			<view class="user-details">
+				<text class="user-name">蒋峰</text>
+				<text class="user-id">就诊卡号：622**********0909</text>
+			</view>
+		</view>
+
+		<view class="menu-section">
+			<view class="menu-item" v-for="(item, index) in menuItems" :key="index">
+				<text class="menu-text">{{ item.title }}</text>
+				<text class="menu-arrow">></text>
+			</view>
+		</view>
+
+		<view class="logout-btn" @click="logout">退出登录</view>
+	</view>
+</template>
+
+<script>
+export default {
+	data() {
+		return {
+			menuItems: [
+				{ title: '我的预约' },
+				{ title: '我的缴费' },
+				{ title: '我的报告' },
+				{ title: '我的消息' },
+				{ title: '设置' },
+				{ title: '关于我们' }
+			]
+		}
+	},
+	methods: {
+		logout() {
+			// 退出登录逻辑
+			uni.showToast({
+				title: '退出登录',
+				icon: 'none'
+			});
+		}
+	}
+}
+</script>
+
+<style scoped>
+.container {
+	padding: 20rpx;
+	background-color: #f5f5f5;
+	min-height: 100vh;
+}
+
+.user-info {
+	display: flex;
+	align-items: center;
+	background-color: white;
+	padding: 30rpx;
+	border-radius: 10rpx;
+	margin-bottom: 20rpx;
+}
+
+.avatar {
+	width: 120rpx;
+	height: 120rpx;
+	border-radius: 50%;
+	background-color: #e6e6e6;
+	margin-right: 30rpx;
+}
+
+.user-details {
+	flex: 1;
+}
+
+.user-name {
+	font-size: 32rpx;
+	font-weight: bold;
+	color: #333;
+	display: block;
+	margin-bottom: 10rpx;
+}
+
+.user-id {
+	font-size: 24rpx;
+	color: #666;
+}
+
+.menu-section {
+	background-color: white;
+	border-radius: 10rpx;
+	margin-bottom: 40rpx;
+}
+
+.menu-item {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 25rpx 30rpx;
+	border-bottom: 1rpx solid #f0f0f0;
+	cursor: pointer;
+}
+
+.menu-item:last-child {
+	border-bottom: none;
+}
+
+.menu-text {
+	font-size: 28rpx;
+	color: #333;
+}
+
+.menu-arrow {
+	font-size: 28rpx;
+	color: #999;
+}
+
+.logout-btn {
+	height: 80rpx;
+	background-color: white;
+	color: #ff4757;
+	font-size: 28rpx;
+	font-weight: bold;
+	border-radius: 40rpx;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	margin: 0 20rpx;
+}
+</style>
