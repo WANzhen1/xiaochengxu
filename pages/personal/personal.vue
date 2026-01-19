@@ -3,16 +3,15 @@
 		<view class="user-info">
 		<view class="user-details">
 			<text class="user-name">{{ userInfo.patientName || '未知用户' }}</text>
-			<text class="user-id">就诊卡号：{{ userInfo.patientAccount || '未知卡号' }}</text>
+			<text class="user-id">就诊卡号：{{ userInfo.patientIDCard || '未知卡号' }}</text>
 		</view>
 		</view>
 		<view class="menu-section">
 			<view class="menu-item" v-for="(item, index) in menuItems" :key="index">
 				<text class="menu-text">{{ item.title }}</text>
-				<text class="menu-arrow">></text>
+				<text class="menu-arrow">➔</text>
 			</view>
 		</view>
-
 		<view class="logout-btn" @click="logout">退出登录</view>
 	</view>
 </template>

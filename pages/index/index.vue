@@ -83,8 +83,8 @@
 
 			<!-- 医院服务卡片 -->
 			<view class="other-service">
-				<view class="service-item" v-for="(item, index) in hospitalServices" :key="index">
-					<view class="service-icon"></view>
+				<view class="service-item" v-for="(item, index) in hospitalServices" :key="index" @click="navigateTo(item.path)">
+					<image class="service-icon" :src="item.iconPath"></image>
 					<text class="service-text">{{ item.title }}</text>
 				</view>
 			</view>
@@ -103,7 +103,13 @@ export default {
   data() {
     return {
       departmentList: [],
-      doctorList: []
+      doctorList: [],
+      hospitalServices: [
+        { title: '医院介绍', path: '/pages/hospital-intro/hospital-intro', iconPath:'/static/icon/yiyuanjieshao.png'},
+        { title: '医院导航', path: '/pages/hospital-map/hospital-map', iconPath:'/static/icon/yiyuandaohang.png' },
+        { title: '就医指南', path: '/pages/medical-guide/medical-guide', iconPath:'/static/icon/jiuyizhinan.png' },
+        { title: '健康百科', path: '/pages/health-encyclopedia/health-encyclopedia', iconPath:'/static/icon/jiankangbaike.png' }
+      ]
     }
   },
   onLoad() {
@@ -111,6 +117,13 @@ export default {
 	this.getDoctorList();
   },
   methods: {
+    // 页面跳转方法
+    navigateTo(url) {
+      uni.navigateTo({
+        url: url
+      });
+    },
+    
     // 获取科室列表
     getDepartmentList() {
       // 显示加载动画
@@ -310,9 +323,9 @@ export default {
 	.service-icon {
 		width: 50rpx;
 		height: 50rpx;
-		background-color: #e6e6e6;
 		border-radius: 50%;
 		margin-bottom: 10rpx;
+		object-fit: cover;
 	}
 
 	.service-text {
