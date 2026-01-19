@@ -22,20 +22,17 @@
 		<view class="doctor-list">
 			<view class="doctor-item" v-for="(doctor, index) in doctors" :key="index" @tap="viewDoctorInfo(doctor)">
 				<view class="doctor-info">
-					<image class="doctor-avatar" src="/static/default-avatar.png" mode="aspectFill"></image>
+					<image class="doctor-avatar" :src="doctor.imgUrl" mode="aspectFill"></image>
 					<view class="doctor-detail">
 						<view class="doctor-name">
-							<text class="name">{{ doctor.DoctorName }}</text>
+							<text class="name">{{ doctor.doctorName }}</text>
 							<text class="title">{{ doctor.titlename || '医师' }}</text>
 						</view>
 						<text class="specialty">{{ doctor.departmentname || '暂无科室信息' }}</text>
-						<view class="doctor-schedule">
-							<text class="schedule-item">专家门诊</text>
-						</view>
 					</view>
 				</view>
 				<view class="doctor-status">
-					<text class="price">¥50</text>
+					<text class="price">¥20</text>
 					<button class="book-btn" @tap.stop="bookAppointment(doctor)">
 						{{ doctor.state === 0 ? '约满' : '预约' }}
 					</button>
@@ -118,13 +115,9 @@ export default {
 			uni.showLoading({
 				title: '加载中...'
 			});
-
 			request({
-				url: '/doctor/searchdoctor',
+				url: '/doctor/searchdoctor?departmentid=' + this.departmentId,
 				method: 'GET',
-				params: {
-					departmentid: this.departmentId
-				}
 			}).then(res => {
 				uni.hideLoading();
 				this.doctors = res.data;
@@ -305,12 +298,6 @@ export default {
 	margin-bottom: 15rpx;
 	display: block;
 }
-
-.doctor-schedule {
-	display: flex;
-	flex-wrap: wrap;
-}
-
 .schedule-item {
 	font-size: 22rpx;
 	color: #999;
