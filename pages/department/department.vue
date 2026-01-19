@@ -4,14 +4,14 @@
 		<view class="department-header">
 			<text class="department-title">{{ departmentName }}</text>
 		</view>
-		
+
 		<!-- 日期选择器 -->
 		<picker class="picker" mode="date">
 			<view>
 				选择日期
 			</view>
-		</picker>		 
-<!-- 		<view class="date-selector">
+		</picker>
+		<!-- 		<view class="date-selector">
 			<view class="date-item" v-for="(item, index) in dates" :key="index" :class="{ active: currentDateIndex === index }" @click="selectDate(index)">
 				<text class="date-week">{{ item.week }}</text>
 				<text class="date-day">{{ item.month }}/{{ item.day }}</text>
@@ -61,17 +61,15 @@ export default {
 	onLoad(options) {
 		// 获取URL参数中的departmentId
 		this.departmentId = options.departmentId;
+		console.log('选择的科室ID'+this.departmentId);
 		// 获取选中的科室信息
 		request({
-			url: '/departmentByID',
-			method: 'GET',
-			params: {
-				id: this.departmentId
-			}
-		}).then(res => {
+				url: '/admin/departmentByID?id=' + this.departmentId,
+				method: 'GET'
+			}).then(res => {
 			if (res.data) {
 				console.log('获取科室信息成功:', res.data);
-				this.departmentName = res.data.DepartmentName;
+				this.departmentName = res.data.departmentName;
 			} else {
 				console.error('获取科室信息失败:', res.data);
 			}
@@ -92,35 +90,35 @@ export default {
 		initDates() {
 			const dates = [];
 			const today = new Date();
-			
+
 			for (let i = 0; i < 7; i++) {
 				const date = new Date(today);
 				date.setDate(today.getDate() + i);
-				
+
 				const week = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'][date.getDay()];
 				const month = date.getMonth() + 1;
 				const day = date.getDate();
-				
+
 				dates.push({
 					week: i === 0 ? '今日' : week,
 					month: month,
 					day: day
 				});
 			}
-			
+
 			this.dates = dates;
 		},
-		
+
 		selectDate(index) {
 			this.currentDateIndex = index;
 		},
-		
+
 		// 获取特定科室的医生列表
 		getDoctorsByDepartment() {
 			uni.showLoading({
 				title: '加载中...'
 			});
-			
+
 			request({
 				url: '/doctor/searchdoctor',
 				method: 'GET',
@@ -139,7 +137,7 @@ export default {
 				});
 			});
 		},
-		
+
 		viewDoctorInfo(doctor) {
 			// 保存医生信息
 			uni.setStorageSync('selectedDoctor', doctor);
@@ -148,7 +146,7 @@ export default {
 				url: '/pages/doctor-info/doctor-info?id=' + doctor.DoctorID
 			});
 		},
-		
+
 		bookAppointment(doctor) {
 			// 保存医生信息
 			uni.setStorageSync('selectedDoctor', doctor);
@@ -175,7 +173,8 @@ export default {
 	margin: 10rpx auto;
 	border-bottom: 1rpx solid #eee;
 }
-.picker view{
+
+.picker view {
 	width: 100%;
 	height: 100%;
 	background-color: #f0f8ff;
@@ -185,15 +184,18 @@ export default {
 	justify-content: center;
 	align-items: center;
 }
+
 .picker view text {
 	color: #333;
 	font-size: 28rpx;
 	font-weight: 400;
 }
+
 .picker view {
 	width: 100%;
 	height: 80rpx;
 }
+
 /* 科室标题 */
 .department-header {
 	background-color: #fff;

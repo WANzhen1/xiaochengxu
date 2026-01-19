@@ -43,28 +43,28 @@ export default {
 		},
 		// 获取科室列表
 		getDepartmentList() {
-		// 显示加载动画
-		uni.showLoading({
-			title: '加载中...'
-		});
-		
-		// 发送GET请求
-		request({
-			url: '/api/departments',
-			method: 'GET'
-		}).then(res => {
-			// 隐藏加载动画
-			uni.hideLoading();
-			// 请求成功，更新科室列表
-			this.departmentList = res.data;
-			console.log('科室列表:', this.departmentList);
-		}).catch(err => {
-			// 隐藏加载动画
-			uni.hideLoading();
+			// 显示加载动画
+			uni.showLoading({
+				title: '加载中...'
+			});
 			
-			// 请求失败，处理错误
-			console.error('获取科室列表失败:', err);
-		});
+			// 发送GET请求
+			request({
+				url: '/api/departments',
+				method: 'GET'
+			}).then(res => {
+				// 隐藏加载动画
+				uni.hideLoading();
+				// 请求成功，更新科室列表
+				this.departmentList = res.data;
+				console.log('科室列表:', this.departmentList);
+			}).catch(err => {
+				// 隐藏加载动画
+				uni.hideLoading();
+				
+				// 请求失败，处理错误
+				console.error('获取科室列表失败:', err);
+			});
 		}
 	}
 };

@@ -3,10 +3,26 @@ const BASE_URL = 'http://localhost:8080';
 
 const request = (options) => {
   return new Promise((resolve, reject) => {
+    // 处理GET请求的查询参数
+    let fullUrl = BASE_URL + options.url;
+    let requestData = options.data || {};
+    
+    if (options.method === 'GET' && options.data) {
+      // 将GET请求的data参数转换为URL查询参数
+      const queryParams = [];
+      for (const key in options.data) {
+        queryParams.push(`${encodeURIComponent(key)}=${encodeURIComponent(options.data[key])}`);
+      }
+      if (queryParams.length > 0) {
+        fullUrl += '?' + queryParams.join('&');
+        requestData = {}; // GET请求不使用body数据
+      }
+    }
+    
     uni.request({
-      url: BASE_URL + options.url,
+      url: fullUrl,
       method: options.method || 'GET',
-      data: options.data || {},
+      data: requestData,
       header: {
         'content-type': 'application/json',
         'Authorization': uni.getStorageSync('token') || ''

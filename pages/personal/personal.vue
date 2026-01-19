@@ -24,8 +24,8 @@ export default {
 			menuItems: [
 				{ title: '我的预约' },
 				{ title: '我的缴费' },
-				{ title: '我的报告' },
-				{ title: '我的消息' },
+				{ title: '我的病历' },
+				{ title: '我的消息' },/* 这里写预约成功的时间，未缴费信息 */
 				{ title: '设置' },
 				{ title: '关于我们', path: '/pages/guanyuwomen/guanyuwomen'}
 			],

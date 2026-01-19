@@ -133,7 +133,7 @@ export default {
       
       // 发送GET请求
       request({
-        url: '/api/departments',
+        url: '/admin/departments',
         method: 'GET'
       }).then(res => {
         // 隐藏加载动画
