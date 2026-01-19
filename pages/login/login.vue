@@ -2,7 +2,7 @@
 	<view class="login-container">
 		<view class="logo-section">
 			<image src="/static/logo.png" class="logo"></image>
-			<text class="login-title">医疗预约挂号系统</text>
+			<text class="login-title">医疗预约挂号傻逼系统</text>
 		</view>
 		
 		<view class="form-section">
