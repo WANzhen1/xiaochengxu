@@ -13,10 +13,10 @@
 			</view>
 			<view class="card-content">
 				<view class="name-tag">
-					<text class="patient-name">{{ patient.name || '蒋峰' }}</text>
-					<view class="relationship-tag">{{ patient.relationship || '本人' }}</view>
+					<text class="patient-name">{{ patient.PatientName || '蒋峰' }}</text>
+					<view class="relationship-tag">本人</view>
 				</view>
-				<text class="card-number">就诊卡：{{ patient.cardNo || '622**********0909' }}</text>
+				<text class="card-number">就诊卡：{{ patient.PatientAccount || '622**********0909' }}</text>
 			</view>
 		</view>
 
@@ -89,11 +89,13 @@
 </template>
 
 <script>
+import request from '../../utils/request';
+
 export default {
 	data() {
 		return {
 			patient: {},
-			balance: 60.00,
+			balance: 0.00,
 			selectedAmount: 100,
 			customAmount: '',
 			amounts: [50, 100, 200, 500, 1000],
@@ -122,7 +124,12 @@ export default {
 	onLoad() {
 		// 从本地存储获取就诊人信息
 		this.patient = uni.getStorageSync('selectedPatient') || {};
-		// 模拟获取卡内余额
+		// 获取卡内余额
+		this.getBalance();
+	},
+	onShow() {
+		// 页面显示时重新获取就诊人信息和余额
+		this.patient = uni.getStorageSync('selectedPatient') || {};
 		this.getBalance();
 	},
 	methods: {
@@ -133,16 +140,29 @@ export default {
 			});
 		},
 		getBalance() {
-			// 模拟获取卡内余额
+			// 调用后端接口获取卡内余额
+			if (!this.patient.PatientID) return;
+			
 			uni.showLoading({
 				title: '加载中...'
 			});
 			
-			setTimeout(() => {
+			request({
+				url: `/patient/findpatient?id=${this.patient.PatientID}`,
+				method: 'GET'
+			}).then(res => {
 				uni.hideLoading();
-				// 模拟余额数据
-				this.balance = 60.00;
-			}, 500);
+				if (res.data) {
+					this.balance = res.data.PatientWallet || 0;
+				}
+			}).catch(err => {
+				uni.hideLoading();
+				console.error('获取余额失败:', err);
+				uni.showToast({
+					title: '获取余额失败',
+					icon: 'none'
+				});
+			});
 		},
 		selectAmount(amount) {
 			this.selectedAmount = amount;
@@ -164,7 +184,7 @@ export default {
 			if (this.canRecharge) {
 				// 跳转到确认缴费信息页面
 				uni.navigateTo({
-					url: '/pages/confirm-payment/confirm-payment?amount=' + this.finalAmount + '&type=recharge'
+					url: `/pages/confirm-payment/confirm-payment?amount=${this.finalAmount}&type=recharge&patientId=${this.patient.PatientID}`
 				});
 			}
 		}

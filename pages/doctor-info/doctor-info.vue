@@ -6,27 +6,27 @@
 				<image class="doctor-avatar" src="/static/default-avatar.png" mode="aspectFill"></image>
 				<view class="doctor-detail-info">
 					<view class="doctor-name-section">
-						<text class="doctor-name">{{ doctor.name }}</text>
-						<text class="doctor-title">{{ doctor.title }}</text>
+						<text class="doctor-name">{{ doctor.DoctorName || '暂无姓名' }}</text>
+						<text class="doctor-title">{{ doctor.titlename || '医师' }}</text>
 					</view>
-					<text class="doctor-department">{{ departmentName }}</text>
-					<text class="doctor-specialty">{{ doctor.specialty }}</text>
+					<text class="doctor-department">{{ departmentName || '暂无科室信息' }}</text>
+					<text class="doctor-specialty">{{ doctor.departmentname || '暂无专业信息' }}</text>
 				</view>
 			</view>
 			
 			<!-- 医生简介 -->
 			<view class="doctor-intro">
 				<text class="section-title">医生简介</text>
-				<text class="intro-content">{{ doctor.intro }}</text>
+				<text class="intro-content">{{ doctor.intro || '该医生暂无简介信息，如有疑问，请咨询医院工作人员。' }}</text>
 			</view>
 			
 			<!-- 出诊时间 -->
 			<view class="doctor-schedule-section">
 				<text class="section-title">出诊时间</text>
 				<view class="schedule-grid">
-					<view class="schedule-item" v-for="(schedule, index) in doctor.schedule" :key="index">
-						<text class="schedule-text">{{ schedule }}</text>
-					</view>
+					<view class="schedule-item">周一 上午</view>
+					<view class="schedule-item">周三 上午</view>
+					<view class="schedule-item">周五 下午</view>
 				</view>
 			</view>
 			
@@ -34,7 +34,9 @@
 			<view class="doctor-skills">
 				<text class="section-title">擅长领域</text>
 				<view class="skills-list">
-					<text class="skill-item" v-for="(skill, index) in doctor.skills" :key="index">{{ skill }}</text>
+					<text class="skill-item">内科常见病</text>
+					<text class="skill-item">多发病</text>
+					<text class="skill-item">疑难病症</text>
 				</view>
 			</view>
 		</scroll-view>
@@ -43,53 +45,82 @@
 		<view class="appointment-section">
 			<view class="price-info">
 				<text class="price-label">挂号费：</text>
-				<text class="price">¥{{ doctor.price }}</text>
+				<text class="price">¥50</text>
 			</view>
-			<button class="appointment-btn" @tap="bookAppointment" :disabled="doctor.status === 'full'">
-				{{ doctor.status === 'full' ? '约满' : '立即预约' }}
+			<button class="appointment-btn" @tap="bookAppointment" :disabled="doctor.state === 0">
+				{{ doctor.state === 0 ? '约满' : '立即预约' }}
 			</button>
 		</view>
 	</view>
 </template>
 
 <script>
+import request from '../../utils/request';
+
 export default {
 	data() {
 		return {
-			doctor: {
-				name: '',
-				title: '',
-				specialty: '',
-				price: 0,
-				status: 'available',
-				schedule: [],
-				intro: '',
-				skills: []
-			},
-			departmentName: '消化内科'
+			doctor: {},
+			doctorId: '',
+			departmentName: ''
 		};
 	},
-	onLoad() {
-		// 从本地存储获取医生信息
-		const selectedDoctor = uni.getStorageSync('selectedDoctor');
-		if (selectedDoctor) {
-			this.doctor = {
-				...selectedDoctor,
-				intro: selectedDoctor.intro || '该医生暂无简介信息，如有疑问，请咨询医院工作人员。',
-				skills: selectedDoctor.skills || ['消化系统疾病', '肝胆疾病', '胃肠疾病', '消化内镜检查']
-			};
-		}
+	onLoad(options) {
+		// 获取URL参数中的doctorId
+		this.doctorId = options.id;
+		// 获取医生详情
+		this.getDoctorInfo();
 	},
 	methods: {
-		bookAppointment() {
-			if (this.doctor.status === 'available') {
-				// 保存医生信息
-				uni.setStorageSync('selectedDoctor', this.doctor);
-				// 跳转到预约须知页面
-				uni.navigateTo({
-					url: '/pages/appointment-notice/appointment-notice'
+		// 获取医生详情
+		getDoctorInfo() {
+			uni.showLoading({
+				title: '加载中...'
+			});
+			// 先从本地存储获取医生信息
+			const selectedDoctor = uni.getStorageSync('selectedDoctor');
+			if (selectedDoctor && selectedDoctor.DoctorID == this.doctorId) {
+				// 如果本地存储有该医生信息，直接使用
+				this.doctor = selectedDoctor;
+				this.departmentName = selectedDoctor.departmentname || '';
+				uni.hideLoading();
+			} else {
+				// 否则调用接口获取医生信息
+				request({
+					url: '/doctor/alldoctors',
+					method: 'GET'
+				}).then(res => {
+					uni.hideLoading();
+					// 从所有医生中找到当前医生
+					const doctor = res.data.find(d => d.DoctorID == this.doctorId);
+					if (doctor) {
+						this.doctor = doctor;
+						this.departmentName = doctor.departmentname || '';
+						// 保存到本地存储
+						uni.setStorageSync('selectedDoctor', doctor);
+					} else {
+						uni.showToast({
+							title: '获取医生信息失败',
+							icon: 'none'
+						});
+					}
+				}).catch(err => {
+					uni.hideLoading();
+					console.error('获取医生信息失败:', err);
+					uni.showToast({
+						title: '获取医生信息失败',
+						icon: 'none'
+					});
 				});
 			}
+		},
+		bookAppointment() {
+			// 保存医生信息
+			uni.setStorageSync('selectedDoctor', this.doctor);
+			// 跳转到预约须知页面
+			uni.navigateTo({
+				url: '/pages/appointment-notice/appointment-notice'
+			});
 		}
 	}
 };

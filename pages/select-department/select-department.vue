@@ -7,8 +7,8 @@
 		<view class="department-list">
 			<view class="department-item" v-for="(department, index) in departments" :key="index" @tap="selectDepartment(department)">
 				<view class="department-info">
-					<text class="department-name">{{ department.name }}</text>
-					<text class="department-desc">{{ department.desc }}</text>
+					<text class="department-name">{{ department.departmentName }}</text>
+					<text class="department-desc">{{ department.desc || '该科室暂无描述信息' }}</text>
 				</view>
 				<view class="arrow-icon">
 					<uni-icons type="right" size="28" color="#ccc" />
@@ -19,54 +19,17 @@
 </template>
 
 <script>
+import request from '../../utils/request';
+
 export default {
 	data() {
 		return {
-			departments: [
-				{
-					id: 1,
-					name: '消化内科',
-					desc: '擅长消化系统疾病的诊断和治疗',
-					path: '/pages/department/department'
-				},
-				{
-					id: 2,
-					name: '心血管内科',
-					desc: '擅长心血管疾病的诊断和治疗',
-					path: '/pages/department/department'
-				},
-				{
-					id: 3,
-					name: '呼吸内科',
-					desc: '擅长呼吸系统疾病的诊断和治疗',
-					path: '/pages/department/department'
-				},
-				{
-					id: 4,
-					name: '神经内科',
-					desc: '擅长神经系统疾病的诊断和治疗',
-					path: '/pages/department/department'
-				},
-				{
-					id: 5,
-					name: '外科',
-					desc: '擅长外科疾病的诊断和治疗',
-					path: '/pages/department/department'
-				},
-				{
-					id: 6,
-					name: '妇产科',
-					desc: '擅长妇产科疾病的诊断和治疗',
-					path: '/pages/department/department'
-				},
-				{
-					id: 7,
-					name: '儿科',
-					desc: '擅长儿科疾病的诊断和治疗',
-					path: '/pages/department/department'
-				}
-			]
+			departments: []
 		};
+	},
+	onLoad() {
+		// 获取科室列表
+		this.getDepartmentList();
 	},
 	methods: {
 		selectDepartment(department) {
@@ -74,7 +37,27 @@ export default {
 			uni.setStorageSync('selectedDepartment', department);
 			// 跳转到对应科室页面
 			uni.navigateTo({
-				url: department.path
+				url: '/pages/department/department?departmentId=' + department.departmentID
+			});
+		},
+		// 获取科室列表
+		getDepartmentList() {
+			uni.showLoading({
+				title: '加载中...'
+			});
+			request({
+				url: '/api/departments',
+				method: 'GET'
+			}).then(res => {
+				uni.hideLoading();
+				this.departments = res.data.data;
+			}).catch(err => {
+				uni.hideLoading();
+				console.error('获取科室列表失败:', err);
+				uni.showToast({
+					title: '获取科室列表失败',
+					icon: 'none'
+				});
 			});
 		}
 	}

@@ -16,15 +16,15 @@
 			<view class="card-content">
 				<view class="info-item">
 					<text class="info-label">就诊人：</text>
-					<text class="info-value">{{ patient.name || '张三' }}</text>
+					<text class="info-value">{{ patient.PatientName || '张三' }}</text>
 				</view>
 				<view class="info-item">
 					<text class="info-label">科室：</text>
-					<text class="info-value">{{ department.name || '消化内科' }}</text>
+					<text class="info-value">{{ department.DepartmentName || doctor.departmentname || '消化内科' }}</text>
 				</view>
 				<view class="info-item">
 					<text class="info-label">医生：</text>
-					<text class="info-value">{{ doctor.name || '赵马' }}</text>
+					<text class="info-value">{{ doctor.DoctorName || '赵马' }}</text>
 				</view>
 				<view class="info-item">
 					<text class="info-label">就诊时间：</text>
@@ -32,7 +32,7 @@
 				</view>
 				<view class="info-item">
 					<text class="info-label">挂号费用：</text>
-					<text class="info-value price">¥{{ doctor.price || 60 }}</text>
+					<text class="info-value price">¥50</text>
 				</view>
 			</view>
 		</view>

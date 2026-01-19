@@ -2,7 +2,7 @@
 	<view class="container">
 		<!-- 科室标题 -->
 		<view class="department-header">
-			<text class="department-title">消化内科</text>
+			<text class="department-title">{{ departmentName }}</text>
 		</view>
 		
 		<!-- 日期选择器 -->
@@ -20,19 +20,19 @@
 					<image class="doctor-avatar" src="/static/default-avatar.png" mode="aspectFill"></image>
 					<view class="doctor-detail">
 						<view class="doctor-name">
-							<text class="name">{{ doctor.name }}</text>
-							<text class="title">{{ doctor.title }}</text>
+							<text class="name">{{ doctor.DoctorName }}</text>
+							<text class="title">{{ doctor.titlename || '医师' }}</text>
 						</view>
-						<text class="specialty">{{ doctor.specialty }}</text>
+						<text class="specialty">{{ doctor.departmentname || '暂无科室信息' }}</text>
 						<view class="doctor-schedule">
-							<text class="schedule-item" v-for="(schedule, idx) in doctor.schedule" :key="idx">{{ schedule }}</text>
+							<text class="schedule-item">专家门诊</text>
 						</view>
 					</view>
 				</view>
 				<view class="doctor-status">
-					<text class="price">¥{{ doctor.price }}</text>
-					<button class="book-btn" :disabled="doctor.status === 'full'" @tap.stop="bookAppointment(doctor)">
-						{{ doctor.status === 'full' ? '约满' : '预约' }}
+					<text class="price">¥50</text>
+					<button class="book-btn" @tap.stop="bookAppointment(doctor)">
+						{{ doctor.state === 0 ? '约满' : '预约' }}
 					</button>
 				</view>
 			</view>
@@ -41,84 +41,100 @@
 </template>
 
 <script>
+import request from '../../utils/request';
+
 export default {
 	data() {
 		return {
 			currentDateIndex: 0,
-			dates: [
-				{ week: '今日', month: '1', day: '3' },
-				{ week: '周六', month: '1', day: '4' },
-				{ week: '周日', month: '1', day: '5' },
-				{ week: '周一', month: '1', day: '6' },
-				{ week: '周二', month: '1', day: '7' },
-				{ week: '周三', month: '1', day: '8' },
-				{ week: '周四', month: '1', day: '9' }
-			],
-			doctors: [
-				{
-					id: 1,
-					name: '赵马',
-					title: '主任医师',
-					specialty: '消化系统疾病的诊断和治疗，擅长肝胆疾病',
-					schedule: ['周一上午', '周三下午', '周五全天'],
-					price: 60,
-					status: 'available',
-					remaining: 30
-				},
-				{
-					id: 2,
-					name: '刘萌萌',
-					title: '主任医师',
-					specialty: '消化系统疾病的诊断和治疗，擅长胃肠疾病',
-					schedule: ['周二上午', '周四下午', '周六全天'],
-					price: 60,
-					status: 'full',
-					remaining: 0
-				},
-				{
-					id: 3,
-					name: '甄金争',
-					title: '副主任医师',
-					specialty: '消化系统疾病的诊断和治疗，擅长肝病',
-					schedule: ['周一下午', '周三上午', '周五下午'],
-					price: 50,
-					status: 'available',
-					remaining: 20
-				},
-				{
-					id: 4,
-					name: '李丽',
-					title: '主治医师',
-					specialty: '消化系统疾病的诊断和治疗，擅长胃肠镜检查',
-					schedule: ['周二下午', '周四上午', '周六上午'],
-					price: 40,
-					status: 'available',
-					remaining: 15
-				}
-			]
+			dates: [],
+			doctors: [],
+			departmentId: '',
+			departmentName: ''
 		}
 	},
+	onLoad(options) {
+		// 获取URL参数中的departmentId
+		this.departmentId = options.departmentId;
+		// 获取选中的科室信息
+		const selectedDepartment = uni.getStorageSync('selectedDepartment');
+		if (selectedDepartment) {
+			this.departmentName = selectedDepartment.DepartmentName;
+		}
+		// 初始化日期数组
+		this.initDates();
+		// 获取医生列表
+		this.getDoctorsByDepartment();
+	},
 	methods: {
+		// 初始化日期数组
+		initDates() {
+			const dates = [];
+			const today = new Date();
+			
+			for (let i = 0; i < 7; i++) {
+				const date = new Date(today);
+				date.setDate(today.getDate() + i);
+				
+				const week = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'][date.getDay()];
+				const month = date.getMonth() + 1;
+				const day = date.getDate();
+				
+				dates.push({
+					week: i === 0 ? '今日' : week,
+					month: month,
+					day: day
+				});
+			}
+			
+			this.dates = dates;
+		},
+		
 		selectDate(index) {
 			this.currentDateIndex = index;
 		},
+		
+		// 获取特定科室的医生列表
+		getDoctorsByDepartment() {
+			uni.showLoading({
+				title: '加载中...'
+			});
+			
+			request({
+				url: '/doctor/searchdoctor',
+				method: 'GET',
+				params: {
+					departmentid: this.departmentId
+				}
+			}).then(res => {
+				uni.hideLoading();
+				this.doctors = res.data;
+			}).catch(err => {
+				uni.hideLoading();
+				console.error('获取医生列表失败:', err);
+				uni.showToast({
+					title: '获取医生列表失败',
+					icon: 'none'
+				});
+			});
+		},
+		
 		viewDoctorInfo(doctor) {
 			// 保存医生信息
 			uni.setStorageSync('selectedDoctor', doctor);
 			// 跳转到医生信息页面
 			uni.navigateTo({
-				url: '/pages/doctor-info/doctor-info'
+				url: '/pages/doctor-info/doctor-info?id=' + doctor.DoctorID
 			});
 		},
+		
 		bookAppointment(doctor) {
-			if (doctor.status === 'available') {
-				// 保存医生信息
-				uni.setStorageSync('selectedDoctor', doctor);
-				// 跳转到预约须知页面
-				uni.navigateTo({
-					url: '/pages/appointment-notice/appointment-notice'
-				});
-			}
+			// 保存医生信息
+			uni.setStorageSync('selectedDoctor', doctor);
+			// 跳转到预约须知页面
+			uni.navigateTo({
+				url: '/pages/appointment-notice/appointment-notice'
+			});
 		}
 	}
 }

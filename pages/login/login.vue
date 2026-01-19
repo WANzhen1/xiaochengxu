@@ -7,8 +7,8 @@
 		
 		<view class="form-section">
 			<view class="input-item">
-				<text class="input-label">手机号</text>
-				<input type="number" v-model="phone" placeholder="请输入手机号" class="input" />
+				<text class="input-label">账号</text>
+				<input type="number" v-model="phone" placeholder="请输入账号" class="input" />
 			</view>
 			
 			<view class="input-item">
@@ -26,6 +26,8 @@
 </template>
 
 <script>
+import request from '../../utils/request';
+
 export default {
 	data() {
 		return {
@@ -35,18 +37,47 @@ export default {
 	},
 	methods: {
 		login() {
+			// 表单验证
+			if (!this.phone) {
+				uni.showToast({
+					title: '请输入账号',
+					icon: 'none'
+				});
+				return;
+			}
+			if (!this.password) {
+				uni.showToast({
+					title: '请输入密码',
+					icon: 'none'
+				});
+				return;
+			}
 			// 登录逻辑
 			uni.showLoading({
 				title: '登录中...'
 			});
-			
-			// 模拟登录成功
-			setTimeout(() => {
+			// 调用登录接口
+			request({
+				url: '/login',
+				method: 'POST',
+				data: {
+					username: this.phone,
+					password: this.password
+				}
+			}).then(res => {
 				uni.hideLoading();
+				// 保存用户信息和token
+				uni.setStorageSync('userInfo', res.data.patient);
+				uni.setStorageSync('token', res.data.token);
+				console.log('存储的内容:', uni.getStorageSync('userInfo'));
+				// 登录成功，跳转到首页
 				uni.switchTab({
 					url: '/pages/index/index'
 				});
-			}, 1000);
+			}).catch(err => {
+				uni.hideLoading();
+				console.error('登录失败:', err);
+			});
 		},
 		forgotPassword() {
 			// 忘记密码逻辑
@@ -68,7 +99,6 @@ export default {
 	background-color: #f8f8f8;
 	height: 100vh;
 }
-
 .logo-section {
 	display: flex;
 	flex-direction: column;
@@ -76,19 +106,16 @@ export default {
 	margin-bottom: 60rpx;
 	margin-top: 100rpx;
 }
-
 .logo {
 	width: 200rpx;
 	height: 200rpx;
 	margin-bottom: 30rpx;
 }
-
 .login-title {
 	font-size: 36rpx;
 	font-weight: bold;
 	color: #333;
 }
-
 .form-section {
 	width: 100%;
 	background-color: #fff;

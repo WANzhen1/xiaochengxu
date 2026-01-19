@@ -10,23 +10,23 @@
 				<text class="section-title">就诊人信息</text>
 				<view class="info-item">
 					<text class="info-label">姓名：</text>
-					<text class="info-value">{{ patient.name }}</text>
+					<text class="info-value">{{ patient.PatientName || '' }}</text>
 				</view>
 				<view class="info-item">
 					<text class="info-label">性别：</text>
-					<text class="info-value">{{ patient.gender }}</text>
+					<text class="info-value">{{ patient.PatientGender || '' }}</text>
 				</view>
 				<view class="info-item">
 					<text class="info-label">年龄：</text>
-					<text class="info-value">{{ patient.age }}岁</text>
+					<text class="info-value">{{ getAge(patient.PatientIDCard) }}岁</text>
 				</view>
 				<view class="info-item">
 					<text class="info-label">身份证号：</text>
-					<text class="info-value">{{ formatIdCard(patient.idCard) }}</text>
+					<text class="info-value">{{ formatIdCard(patient.PatientIDCard) }}</text>
 				</view>
 				<view class="info-item">
 					<text class="info-label">手机号：</text>
-					<text class="info-value">{{ patient.phone }}</text>
+					<text class="info-value">{{ patient.PatientAccount || '' }}</text>
 				</view>
 			</view>
 			
@@ -35,19 +35,19 @@
 				<text class="section-title">医生信息</text>
 				<view class="info-item">
 					<text class="info-label">姓名：</text>
-					<text class="info-value">{{ doctor.name }}</text>
+					<text class="info-value">{{ doctor.DoctorName || '' }}</text>
 				</view>
 				<view class="info-item">
 					<text class="info-label">科室：</text>
-					<text class="info-value">{{ department.name }}</text>
+					<text class="info-value">{{ department.DepartmentName || doctor.departmentname || '' }}</text>
 				</view>
 				<view class="info-item">
 					<text class="info-label">职称：</text>
-					<text class="info-value">{{ doctor.title }}</text>
+					<text class="info-value">{{ doctor.titlename || '' }}</text>
 				</view>
 				<view class="info-item">
 					<text class="info-label">出诊时间：</text>
-					<text class="info-value">{{ doctor.schedule[0] }}</text>
+					<text class="info-value">周一上午</text>
 				</view>
 			</view>
 			
@@ -64,7 +64,7 @@
 				</view>
 				<view class="info-item">
 					<text class="info-label">挂号费用：</text>
-					<text class="info-value price">¥{{ doctor.price }}</text>
+					<text class="info-value price">¥50</text>
 				</view>
 			</view>
 			
@@ -81,7 +81,7 @@
 		<view class="footer">
 			<view class="total-price">
 				<text class="price-label">总计：</text>
-				<text class="price-value">¥{{ doctor.price }}</text>
+				<text class="price-value">¥50</text>
 			</view>
 			<button class="confirm-btn" @tap="confirmAppointment">确认预约</button>
 		</view>
@@ -89,25 +89,14 @@
 </template>
 
 <script>
+import request from '../../utils/request';
+
 export default {
 	data() {
 		return {
-			patient: {
-				name: '',
-				gender: '',
-				age: '',
-				idCard: '',
-				phone: ''
-			},
-			doctor: {
-				name: '',
-				title: '',
-				schedule: [],
-				price: 0
-			},
-			department: {
-				name: ''
-			},
+			patient: {},
+			doctor: {},
+			department: {},
 			appointmentDate: ''
 		};
 	},
@@ -115,7 +104,7 @@ export default {
 		// 从本地存储获取信息
 		this.patient = uni.getStorageSync('selectedPatient') || {};
 		this.doctor = uni.getStorageSync('selectedDoctor') || {};
-		this.department = uni.getStorageSync('selectedDepartment') || { name: '消化内科' };
+		this.department = uni.getStorageSync('selectedDepartment') || {};
 		
 		// 设置默认预约日期
 		const now = new Date();
@@ -127,19 +116,27 @@ export default {
 			if (!idCard) return '';
 			return idCard.replace(/(\d{6})\d{8}(\d{4})/, '$1********$2');
 		},
+		// 根据身份证号计算年龄
+		getAge(idCard) {
+			if (!idCard || idCard.length < 18) return 0;
+			const birthYear = parseInt(idCard.substring(6, 10));
+			const currentYear = new Date().getFullYear();
+			return currentYear - birthYear;
+		},
 		confirmAppointment() {
-			// 模拟预约成功
+			// 确认预约
 			uni.showLoading({
 				title: '预约中...'
 			});
 			
-			setTimeout(() => {
-				uni.hideLoading();
-				// 跳转到预约成功页面
-				uni.navigateTo({
-					url: '/pages/appointment-success/appointment-success'
-				});
-			}, 1500);
+			// 模拟预约成功，实际应调用后端接口
+		setTimeout(() => {
+			uni.hideLoading();
+			// 跳转到预约成功页面
+			uni.navigateTo({
+				url: '/pages/appointment-success/appointment-success'
+			});
+		}, 1500);
 		}
 	}
 };

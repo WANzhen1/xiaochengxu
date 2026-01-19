@@ -1,13 +1,11 @@
 <template>
 	<view class="container">
 		<view class="user-info">
-			<view class="avatar"></view>
-			<view class="user-details">
-				<text class="user-name">蒋峰</text>
-				<text class="user-id">就诊卡号：622**********0909</text>
-			</view>
+		<view class="user-details">
+			<text class="user-name">{{ userInfo.patientName || '未知用户' }}</text>
+			<text class="user-id">就诊卡号：{{ userInfo.patientAccount || '未知卡号' }}</text>
 		</view>
-
+		</view>
 		<view class="menu-section">
 			<view class="menu-item" v-for="(item, index) in menuItems" :key="index">
 				<text class="menu-text">{{ item.title }}</text>
@@ -20,6 +18,7 @@
 </template>
 
 <script>
+	
 export default {
 	data() {
 		return {
@@ -30,16 +29,46 @@ export default {
 				{ title: '我的消息' },
 				{ title: '设置' },
 				{ title: '关于我们' }
-			]
+			],
+			userInfo: {} // 初始化userInfo为空对象
 		}
 	},
+	onLoad() {
+	// 从本地缓存获取用户信息
+	this.getUserInfo();
+	},
 	methods: {
+		// 获取用户信息
+		getUserInfo() {
+		// 从本地缓存获取用户信息
+		const userInfo = uni.getStorageSync('userInfo');
+		if (userInfo) {
+			this.userInfo = userInfo;
+			console.log('获取用户信息成功:', this.userInfo);
+		} else {
+			console.log('未找到用户信息');
+			// 如果没有用户信息，跳转到登录页面
+			uni.reLaunch({
+			url: '/pages/login/login'
+			});
+		}
+		},
 		logout() {
 			// 退出登录逻辑
 			uni.showToast({
-				title: '退出登录',
-				icon: 'none'
+				title: '退出登录成功',
+				icon: 'success'
 			});
+			console.log('退出登录成功');
+			// 删除本地缓存的用户信息和token
+			uni.removeStorageSync('userInfo');
+			uni.removeStorageSync('token');
+			// 跳转到登录页面
+			setTimeout(() => {
+				uni.reLaunch({
+					url: '/pages/login/login'
+				});
+			}, 1000);
 		}
 	}
 }

@@ -26,9 +26,9 @@
 						<text class="info-value">{{ paymentItem }}</text>
 					</view>
 					<view class="info-item">
-						<text class="info-label">就诊人：</text>
-						<text class="info-value">{{ patient.name || '张三' }}</text>
-					</view>
+					<text class="info-label">就诊人：</text>
+					<text class="info-value">{{ patient.PatientName || '张三' }}</text>
+				</view>
 					<view class="info-item">
 						<text class="info-label">金额：</text>
 						<text class="info-value price">¥{{ amount || 0 }}</text>
@@ -84,6 +84,8 @@
 </template>
 
 <script>
+import request from '../../utils/request';
+
 export default {
 	data() {
 		return {
@@ -92,17 +94,21 @@ export default {
 			patient: {},
 			amount: 0,
 			paymentTime: '',
-			selectedPayment: 'wechat'
+			selectedPayment: 'wechat',
+			patientId: ''
 		};
 	},
 	onLoad(options) {
-		// 从参数中获取金额和类型
+		// 从参数中获取金额、类型和患者ID
 		if (options.amount) {
 			this.amount = parseFloat(options.amount);
 		}
 		if (options.type) {
 			this.paymentType = options.type;
 			this.paymentItem = this.paymentType === 'recharge' ? '门诊充值' : '门诊缴费';
+		}
+		if (options.patientId) {
+			this.patientId = options.patientId;
 		}
 		
 		// 从本地存储获取就诊人信息
@@ -117,18 +123,32 @@ export default {
 			this.selectedPayment = payment;
 		},
 		confirmPayment() {
-			// 模拟支付过程
+			// 调用后端充值接口
 			uni.showLoading({
 				title: '支付中...'
 			});
 			
-			setTimeout(() => {
+			request({
+				url: '/patient/addmoney',
+				method: 'POST',
+				data: {
+					PatientID: this.patientId || this.patient.PatientID,
+					money: this.amount
+				}
+			}).then(res => {
 				uni.hideLoading();
 				// 跳转到缴费信息页面
 				uni.navigateTo({
-					url: '/pages/payment-info/payment-info?amount=' + this.amount + '&type=' + this.paymentType
+					url: `/pages/payment-info/payment-info?amount=${this.amount}&type=${this.paymentType}`
 				});
-			}, 1500);
+			}).catch(err => {
+				uni.hideLoading();
+				console.error('支付失败:', err);
+				uni.showToast({
+					title: '支付失败，请重试',
+					icon: 'none'
+				});
+			});
 		}
 	}
 };

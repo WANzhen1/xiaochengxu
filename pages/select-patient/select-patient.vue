@@ -8,15 +8,15 @@
 			<view class="patient-item" v-for="(patient, index) in patients" :key="index" @tap="selectPatient(patient)">
 				<view class="patient-info">
 					<view class="patient-name">
-						<text class="name">{{ patient.name }}</text>
-						<text class="gender">{{ patient.gender }}</text>
-						<text class="age">{{ patient.age }}岁</text>
+						<text class="name">{{ patient.PatientName }}</text>
+						<text class="gender">{{ patient.PatientGender }}</text>
+						<text class="age">{{ getAge(patient.PatientIDCard) }}岁</text>
 					</view>
-					<text class="id-card">{{ patient.idCard }}</text>
-					<text class="phone">{{ patient.phone }}</text>
+					<text class="id-card">{{ patient.PatientIDCard }}</text>
+					<text class="phone">{{ patient.PatientAccount }}</text>
 				</view>
 				<view class="select-icon">
-					<uni-icons type="checkbox" size="30" :color="selectedPatientId === patient.id ? '#007aff' : '#ccc'" />
+					<uni-icons type="checkbox" size="30" :color="selectedPatientId === patient.PatientID ? '#007aff' : '#ccc'" />
 				</view>
 			</view>
 		</view>
@@ -35,33 +35,22 @@
 </template>
 
 <script>
+import request from '../../utils/request';
+
 export default {
 	data() {
 		return {
-			patients: [
-				{
-					id: 1,
-					name: '张三',
-					gender: '男',
-					age: 30,
-					idCard: '110101199001011234',
-					phone: '13800138000'
-				},
-				{
-					id: 2,
-					name: '李四',
-					gender: '女',
-					age: 25,
-					idCard: '110101199501011234',
-					phone: '13800138001'
-				}
-			],
+			patients: [],
 			selectedPatientId: null
 		};
 	},
+	onLoad() {
+		// 获取患者列表
+		this.getPatientList();
+	},
 	methods: {
 		selectPatient(patient) {
-			this.selectedPatientId = patient.id;
+			this.selectedPatientId = patient.PatientID;
 		},
 		addPatient() {
 			// 添加就诊人逻辑
@@ -72,7 +61,7 @@ export default {
 		},
 		confirm() {
 			if (this.selectedPatientId) {
-				const selectedPatient = this.patients.find(p => p.id === this.selectedPatientId);
+				const selectedPatient = this.patients.find(p => p.PatientID === this.selectedPatientId);
 				// 保存选中的就诊人信息
 				uni.setStorageSync('selectedPatient', selectedPatient);
 				// 跳转到选择科室页面
@@ -80,6 +69,33 @@ export default {
 					url: '/pages/select-department/select-department'
 				});
 			}
+		},
+		// 获取患者列表
+		getPatientList() {
+			uni.showLoading({
+				title: '加载中...'
+			});
+			request({
+				url: '/patient/allpatients',
+				method: 'GET'
+			}).then(res => {
+				uni.hideLoading();
+				this.patients = res.data;
+			}).catch(err => {
+				uni.hideLoading();
+				console.error('获取患者列表失败:', err);
+				uni.showToast({
+					title: '获取患者列表失败',
+					icon: 'none'
+				});
+			});
+		},
+		// 根据身份证号计算年龄
+		getAge(idCard) {
+			if (!idCard || idCard.length < 18) return 0;
+			const birthYear = parseInt(idCard.substring(6, 10));
+			const currentYear = new Date().getFullYear();
+			return currentYear - birthYear;
 		}
 	}
 };

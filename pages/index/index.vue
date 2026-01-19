@@ -16,7 +16,7 @@
 
 			<!-- 主要服务卡片 -->
 			<view class="main-service">
-				<view class="service-card pink" @click="navigateTo('/pages/department/department')">
+				<view class="service-card pink" @click="navigateTo('/pages/select-department/select-department')">
 					<text class="service-title">预约挂号</text>
 					<text class="service-desc">在线挂号预约</text>
 					<view class="service-circle pink"></view>
@@ -43,6 +43,37 @@
 			</view>
 		</view>
 
+		<!-- 科室列表 -->
+		<view class="service-section">
+		<view class="section-title">
+			<view class="title-icon"></view>
+			<text class="title-text">科室列表</text>
+		</view>
+		<view class="department-list">
+			<view class="department-item" v-for="(department, index) in departmentList" :key="index" @click="navigateTo('/pages/select-department/select-department')">
+			<text class="department-name">{{ department.departmentName }}</text>
+			</view>
+		</view>
+		</view>
+
+		<!-- 医生推荐 -->
+		<view class="service-section">
+			<view class="section-title">
+				<view class="title-icon"></view>
+				<text class="title-text">医生推荐</text>
+			</view>
+			<view class="doctor-list">
+				<view class="doctor-item" v-for="(doctor, index) in doctorList" :key="index" @click="navigateTo('/pages/doctor-info/doctor-info?id=' + doctor.DoctorID)">
+					<image class="doctor-avatar" :src="doctor.imgUrl"></image>
+					<view class="doctor-info">
+						<view class="doctor-name">{{ doctor.doctorName }}</view>
+						<view class="doctor-title">{{ doctor.titlename }} | {{ doctor.departmentname }}</view>
+						<view class="doctor-desc">擅长：内科常见病、多发病的诊断与治疗</view>
+					</view>
+				</view>
+			</view>
+		</view>
+
 		<!-- 医院服务 -->
 		<view class="service-section">
 			<view class="section-title">
@@ -62,37 +93,82 @@
 </template>
 
 <script>
-	export default {
-		data() {
-			return {
-				swiperList: [
-					{ title: '预约须知' },
-					{ title: '医院公告' },
-					{ title: '健康知识' },
-					{ title: '就诊指南' }
-				],
-				otherServices: [
-					{ title: '候诊查询' },
-					{ title: '自助缴费' },
-					{ title: '门诊费用' },
-					{ title: '在线退款' }
-				],
-				hospitalServices: [
-					{ title: '医院介绍' },
-					{ title: '医院导航' },
-					{ title: '就医指南' },
-					{ title: '健康百科' }
-				]
-			}
-		},
-		methods: {
-			navigateTo(url) {
-				uni.navigateTo({
-					url: url
-				});
-			}
-		}
-	}
+/* import {ref,onMounted} from 'vue'
+const departmentList = ref([]);
+const doctorList = ref([]); */
+// 在页面组件中
+import request from '../../utils/request';
+
+export default {
+  data() {
+    return {
+      departmentList: [],
+      doctorList: []
+    }
+  },
+  onLoad() {
+    this.getDepartmentList();
+	this.getDoctorList();
+  },
+  methods: {
+    // 获取科室列表
+    getDepartmentList() {
+      // 显示加载动画
+      uni.showLoading({
+        title: '加载中...'
+      });
+      
+      // 发送GET请求
+      request({
+        url: '/api/departments',
+        method: 'GET'
+      }).then(res => {
+        // 隐藏加载动画
+        uni.hideLoading();
+        // 请求成功，更新科室列表
+        this.departmentList = res.data;
+        console.log('科室列表:', this.departmentList);
+      }).catch(err => {
+        // 隐藏加载动画
+        uni.hideLoading();
+        
+        // 请求失败，处理错误
+        console.error('获取科室列表失败:', err);
+      });
+    },
+	  // 获取医生列表
+    getDoctorList() {
+      // 显示加载动画
+      uni.showLoading({
+        title: '加载中...'
+      });
+      // 发送GET请求
+      request({
+        url: '/doctor/alldoctors',
+        method: 'GET'
+      }).then(res => {
+        // 隐藏加载动画
+        uni.hideLoading();
+        // 请求成功，更新医生列表
+        // 检查数据是否存在
+        if (res.data && Array.isArray(res.data)) {
+          // 只截取前4位医生作为推荐
+          this.doctorList = res.data.slice(0, 4);
+          console.log('医生列表赋值后:', this.doctorList);
+        } else {
+          console.error('医生列表数据格式错误:', res.data);
+          this.doctorList = [];
+        }
+      }).catch(err => {
+        // 隐藏加载动画
+        uni.hideLoading();
+        // 请求失败，处理错误
+        console.error('获取医生列表失败:', err);
+        this.doctorList = [];
+      });
+    }
+  }
+}
 </script>
 
 <style scoped>
@@ -242,5 +318,79 @@
 	.service-text {
 		font-size: 24rpx;
 		color: #333;
+	}
+
+	/* 科室列表样式 */
+	.department-list {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		padding: 10rpx 0;
+	}
+
+	.department-item {
+		width: 48%;
+		height: 80rpx;
+		background-color: #f5f5f5;
+		border-radius: 10rpx;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin-bottom: 20rpx;
+		border: 1rpx solid #e0e0e0;
+	}
+
+	.department-name {
+		font-size: 28rpx;
+		color: #333;
+		font-weight: 500;
+	}
+
+	/* 医生推荐样式 */
+	.doctor-list {
+		padding: 10rpx 0;
+	}
+
+	.doctor-item {
+		display: flex;
+		padding: 20rpx 0;
+		border-bottom: 1rpx solid #f0f0f0;
+	}
+
+	.doctor-item:last-child {
+		border-bottom: none;
+	}
+
+	.doctor-avatar {
+		width: 100rpx;
+		height: 100rpx;
+		border-radius: 50%;
+		background-color: #e0e0e0;
+		margin-right: 20rpx;
+	}
+
+	.doctor-info {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+	}
+
+	.doctor-name {
+		font-size: 32rpx;
+		font-weight: bold;
+		color: #333;
+		margin-bottom: 10rpx;
+	}
+
+	.doctor-title {
+		font-size: 24rpx;
+		color: #666;
+		margin-bottom: 10rpx;
+	}
+
+	.doctor-desc {
+		font-size: 22rpx;
+		color: #999;
 	}
 </style>

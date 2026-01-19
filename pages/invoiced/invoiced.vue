@@ -63,42 +63,13 @@
 </template>
 
 <script>
+import request from '../../utils/request';
+
 export default {
 	data() {
 		return {
 			activeFilter: 'all',
-			invoices: [
-				{
-					id: 1,
-					type: 'recharge',
-					status: '已开具',
-					invoiceTime: '2026-01-16 14:30:00',
-					invoiceNo: '1234567890',
-					tradeNo: 'TX202601161430001234',
-					amount: 100.00,
-					item: '门诊充值'
-				},
-				{
-					id: 2,
-					type: 'treatment',
-					status: '已开具',
-					invoiceTime: '2026-01-15 10:15:00',
-					invoiceNo: '0987654321',
-					tradeNo: 'TX202601151015005678',
-					amount: 258.50,
-					item: '门诊缴费'
-				},
-				{
-					id: 3,
-					type: 'recharge',
-					status: '已开具',
-					invoiceTime: '2026-01-14 16:45:00',
-					invoiceNo: '1122334455',
-					tradeNo: 'TX202601141645009012',
-					amount: 50.00,
-					item: '门诊充值'
-				}
-			]
+			invoices: []
 		};
 	},
 	computed: {
@@ -109,29 +80,122 @@ export default {
 			return this.invoices.filter(invoice => invoice.type === this.activeFilter);
 		}
 	},
+	onLoad() {
+		// 获取已开具发票列表
+		this.getInvoicedList();
+	},
 	methods: {
 		setFilter(filter) {
 			this.activeFilter = filter;
 		},
+		// 获取已开具发票列表
+		getInvoicedList() {
+			uni.showLoading({
+				title: '加载中...'
+			});
+			// 模拟调用后端接口获取已开具发票列表
+			request({
+				url: '/api/invoices/invoiced',
+				method: 'GET'
+			}).then(res => {
+				uni.hideLoading();
+				this.invoices = res.data || [];
+			}).catch(err => {
+				uni.hideLoading();
+				console.error('获取已开具发票列表失败:', err);
+				// 如果接口调用失败，使用模拟数据
+				this.invoices = [
+					{
+						id: 1,
+						type: 'recharge',
+						status: '已开具',
+						invoiceTime: '2026-01-16 14:30:00',
+						invoiceNo: '1234567890',
+						tradeNo: 'TX202601161430001234',
+						amount: 100.00,
+						item: '门诊充值'
+					},
+					{
+						id: 2,
+						type: 'treatment',
+						status: '已开具',
+						invoiceTime: '2026-01-15 10:15:00',
+						invoiceNo: '0987654321',
+						tradeNo: 'TX202601151015005678',
+						amount: 258.50,
+						item: '门诊缴费'
+					},
+					{
+						id: 3,
+						type: 'recharge',
+						status: '已开具',
+						invoiceTime: '2026-01-14 16:45:00',
+						invoiceNo: '1122334455',
+						tradeNo: 'TX202601141645009012',
+						amount: 50.00,
+						item: '门诊充值'
+					}
+				];
+			});
+		},
+		// 查看发票详情
 		viewInvoice(invoice) {
-			// 查看发票详情
-			uni.showToast({
-				title: '查看发票：' + invoice.invoiceNo,
-				icon: 'none'
+			// 模拟调用后端接口查看发票详情
+			request({
+				url: `/api/invoices/view/${invoice.id}`,
+				method: 'GET'
+			}).then(res => {
+				// 处理发票详情数据
+				uni.showToast({
+					title: '查看发票：' + invoice.invoiceNo,
+					icon: 'none'
+				});
+			}).catch(err => {
+				console.error('查看发票失败:', err);
+				uni.showToast({
+					title: '查看发票失败，请重试',
+					icon: 'none'
+				});
 			});
 		},
+		// 下载发票
 		downloadInvoice(invoice) {
-			// 下载发票
-			uni.showToast({
-				title: '下载发票：' + invoice.invoiceNo,
-				icon: 'none'
+			// 模拟调用后端接口下载发票
+			request({
+				url: `/api/invoices/download/${invoice.id}`,
+				method: 'GET'
+			}).then(res => {
+				// 处理发票下载逻辑
+				uni.showToast({
+					title: '下载发票：' + invoice.invoiceNo,
+					icon: 'none'
+				});
+			}).catch(err => {
+				console.error('下载发票失败:', err);
+				uni.showToast({
+					title: '下载发票失败，请重试',
+					icon: 'none'
+				});
 			});
 		},
+		// 分享发票
 		shareInvoice(invoice) {
-			// 分享发票
-			uni.showToast({
-				title: '分享发票：' + invoice.invoiceNo,
-				icon: 'none'
+			// 模拟调用后端接口分享发票
+			request({
+				url: `/api/invoices/share/${invoice.id}`,
+				method: 'POST'
+			}).then(res => {
+				// 处理发票分享逻辑
+				uni.showToast({
+					title: '分享发票：' + invoice.invoiceNo,
+					icon: 'none'
+				});
+			}).catch(err => {
+				console.error('分享发票失败:', err);
+				uni.showToast({
+					title: '分享发票失败，请重试',
+					icon: 'none'
+				});
 			});
 		}
 	}
