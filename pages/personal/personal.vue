@@ -7,7 +7,7 @@
 		</view>
 		</view>
 		<view class="menu-section">
-			<view class="menu-item" v-for="(item, index) in menuItems" :key="index">
+			<view class="menu-item" v-for="(item, index) in menuItems" :key="index"  @click="navigateTo(item.path)">
 				<text class="menu-text">{{ item.title }}</text>
 				<text class="menu-arrow">➔</text>
 			</view>
@@ -27,7 +27,7 @@ export default {
 				{ title: '我的报告' },
 				{ title: '我的消息' },
 				{ title: '设置' },
-				{ title: '关于我们' }
+				{ title: '关于我们', path: '/pages/guanyuwomen/guanyuwomen'}
 			],
 			userInfo: {} // 初始化userInfo为空对象
 		}
@@ -37,6 +37,12 @@ export default {
 	this.getUserInfo();
 	},
 	methods: {
+		// 页面跳转方法
+		navigateTo(url) {
+		uni.navigateTo({
+			url: url
+		});
+		},
 		// 获取用户信息
 		getUserInfo() {
 		// 从本地缓存获取用户信息
