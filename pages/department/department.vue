@@ -6,12 +6,17 @@
 		</view>
 		
 		<!-- 日期选择器 -->
-		<view class="date-selector">
+		<picker class="picker" mode="date">
+			<view>
+				选择日期
+			</view>
+		</picker>		 
+<!-- 		<view class="date-selector">
 			<view class="date-item" v-for="(item, index) in dates" :key="index" :class="{ active: currentDateIndex === index }" @click="selectDate(index)">
 				<text class="date-week">{{ item.week }}</text>
 				<text class="date-day">{{ item.month }}/{{ item.day }}</text>
 			</view>
-		</view>
+		</view> -->
 
 		<!-- 医生列表 -->
 		<view class="doctor-list">
@@ -57,10 +62,26 @@ export default {
 		// 获取URL参数中的departmentId
 		this.departmentId = options.departmentId;
 		// 获取选中的科室信息
-		const selectedDepartment = uni.getStorageSync('selectedDepartment');
-		if (selectedDepartment) {
-			this.departmentName = selectedDepartment.DepartmentName;
-		}
+		request({
+			url: '/departmentByID',
+			method: 'GET',
+			params: {
+				id: this.departmentId
+			}
+		}).then(res => {
+			if (res.data) {
+				console.log('获取科室信息成功:', res.data);
+				this.departmentName = res.data.DepartmentName;
+			} else {
+				console.error('获取科室信息失败:', res.data);
+			}
+		}).catch(err => {
+			console.error('获取科室信息失败:', err);
+			uni.showToast({
+				title: '获取科室信息失败',
+				icon: 'none'
+			});
+		});
 		// 初始化日期数组
 		this.initDates();
 		// 获取医生列表
@@ -147,6 +168,32 @@ export default {
 	min-height: 100vh;
 }
 
+/* Picker样式美化 */
+.picker {
+	background-color: white;
+	width: 80%;
+	margin: 10rpx auto;
+	border-bottom: 1rpx solid #eee;
+}
+.picker view{
+	width: 100%;
+	height: 100%;
+	background-color: #f0f8ff;
+	border-radius: 10rpx;
+	border: 2rpx solid #007AFF;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.picker view text {
+	color: #333;
+	font-size: 28rpx;
+	font-weight: 400;
+}
+.picker view {
+	width: 100%;
+	height: 80rpx;
+}
 /* 科室标题 */
 .department-header {
 	background-color: #fff;

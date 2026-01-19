@@ -4,16 +4,17 @@
 			<text class="title">选择科室</text>
 		</view>
 		
+		<!-- 科室列表 -->
+		<view class="service-section">
+		<view class="section-title">
+			<view class="title-icon"></view>
+			<text class="title-text">科室列表</text>
+		</view>
 		<view class="department-list">
-			<view class="department-item" v-for="(department, index) in departments" :key="index" @tap="selectDepartment(department)">
-				<view class="department-info">
-					<text class="department-name">{{ department.departmentName }}</text>
-					<text class="department-desc">{{ department.desc || '该科室暂无描述信息' }}</text>
-				</view>
-				<view class="arrow-icon">
-					<uni-icons type="right" size="28" color="#ccc" />
-				</view>
+			<view class="department-item" v-for="(department, index) in departmentList" :key="index" @click="selectDepartment(department)">
+			<text class="department-name">{{ department.departmentName }}</text>
 			</view>
+		</view>
 		</view>
 	</view>
 </template>
@@ -24,7 +25,7 @@ import request from '../../utils/request';
 export default {
 	data() {
 		return {
-			departments: []
+			departmentList: []
 		};
 	},
 	onLoad() {
@@ -42,23 +43,28 @@ export default {
 		},
 		// 获取科室列表
 		getDepartmentList() {
-			uni.showLoading({
-				title: '加载中...'
-			});
-			request({
-				url: '/api/departments',
-				method: 'GET'
-			}).then(res => {
-				uni.hideLoading();
-				this.departments = res.data.data;
-			}).catch(err => {
-				uni.hideLoading();
-				console.error('获取科室列表失败:', err);
-				uni.showToast({
-					title: '获取科室列表失败',
-					icon: 'none'
-				});
-			});
+		// 显示加载动画
+		uni.showLoading({
+			title: '加载中...'
+		});
+		
+		// 发送GET请求
+		request({
+			url: '/api/departments',
+			method: 'GET'
+		}).then(res => {
+			// 隐藏加载动画
+			uni.hideLoading();
+			// 请求成功，更新科室列表
+			this.departmentList = res.data;
+			console.log('科室列表:', this.departmentList);
+		}).catch(err => {
+			// 隐藏加载动画
+			uni.hideLoading();
+			
+			// 请求失败，处理错误
+			console.error('获取科室列表失败:', err);
+		});
 		}
 	}
 };
@@ -80,6 +86,7 @@ export default {
 	font-size: 36rpx;
 	font-weight: bold;
 	color: #333;
+	margin-bottom: 20rpx;
 }
 
 .department-list {
