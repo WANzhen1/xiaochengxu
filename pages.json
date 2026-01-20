@@ -27,7 +27,7 @@
 		{
 			"path": "pages/department/department",
 			"style": {
-				"navigationBarTitleText": "消化内科"
+				"navigationBarTitleText": "预约医生"
 			}
 		},
 		{

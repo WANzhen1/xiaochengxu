@@ -6,7 +6,7 @@
 		</view>
 
 		<!-- 日期选择器 -->
-		<picker class="picker" mode="date">
+		<picker class="picker" mode="date" :value="selectDate" @change="onDateChange">
 			<view>
 				选择日期
 			</view>
@@ -52,7 +52,8 @@ export default {
 			dates: [],
 			doctors: [],
 			departmentId: '',
-			departmentName: ''
+			departmentName: '',
+			selectedDate: this.getToday(), // 初始化为当前日期
 		}
 	},
 	onLoad(options) {
@@ -77,39 +78,40 @@ export default {
 				icon: 'none'
 			});
 		});
-		// 初始化日期数组
-		this.initDates();
 		// 获取医生列表
 		this.getDoctorsByDepartment();
 	},
 	methods: {
-		// 初始化日期数组
-		initDates() {
-			const dates = [];
-			const today = new Date();
-
-			for (let i = 0; i < 7; i++) {
-				const date = new Date(today);
-				date.setDate(today.getDate() + i);
-
-				const week = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'][date.getDay()];
-				const month = date.getMonth() + 1;
-				const day = date.getDate();
-
-				dates.push({
-					week: i === 0 ? '今日' : week,
-					month: month,
-					day: day
-				});
-			}
-
-			this.dates = dates;
+		getToday() {
+		const today = new Date();
+		const year = today.getFullYear();
+		const month = String(today.getMonth() + 1).padStart(2, '0');
+		const day = String(today.getDate()).padStart(2, '0');
+		return `${year}-${month}-${day}`;
 		},
-
-		selectDate(index) {
-			this.currentDateIndex = index;
+		// 日期选择变化事件
+		onDateChange(e) {
+		this.selectedDate = e.detail.value; // 获取用户选择的日期
+		console.log('用户选择的日期:', this.selectedDate);
+		this.getDoctorSchedule(this.selectedDate);
 		},
-
+		getDoctorSchedule(date){
+			uni.showLoading({
+				title: '加载中...'
+			});
+			let url = '/admin/doctors?date=' + encodeURIComponent(date) + '&department=' + encodeURIComponent(this.departmentId);
+			request({
+				url:url,
+				method:'GET',
+				params:{
+					date:date,
+					departmentid:this.departmentId
+				}
+			}).then(res=>{
+				uni.hideLoading();
+				this.doctors = res.data;
+			});
+		},
 		// 获取特定科室的医生列表
 		getDoctorsByDepartment() {
 			uni.showLoading({
