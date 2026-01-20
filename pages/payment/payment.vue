@@ -1,6 +1,6 @@
 <template>
 	<view class="container">
-		<!-- 就诊人信息 -->
+		<!-- 就诊人信息3 -->
 		<view class="patient-info">
 			<view class="info">
 				<view class="name-tag">
