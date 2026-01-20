@@ -36,10 +36,10 @@
 				</view>
 			</view>
 
-			<!-- 报告查询 -->
+			<!-- 病历查询 -->
 			<view class="service-item single-item">
 				<view class="service-icon"></view>
-				<text class="service-text">报告查询</text>
+				<text class="service-text">病历查询</text>
 			</view>
 		</view>
 

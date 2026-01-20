@@ -48,7 +48,10 @@
 		
 		<view class="confirm-section">
 			<view class="checkbox-wrapper">
-				<checkbox class="checkbox" />
+				<checkbox-group @change="handleCheckboxChange">
+					<checkbox class="checkbox" :value="val" :checked="agree"  />
+				</checkbox-group>
+				
 				<text class="checkbox-text">我已阅读并同意以上预约须知</text>
 			</view>
 			<button class="confirm-btn" @tap="confirm" :disabled="!agree">确认预约</button>
@@ -60,7 +63,8 @@
 export default {
 	data() {
 		return {
-			agree: false
+			agree: false,
+			val:'同意'
 		};
 	},
 	methods: {
@@ -70,6 +74,14 @@ export default {
 				uni.navigateTo({
 					url: '/pages/confirm-appointment/confirm-appointment'
 				});
+			}
+		},
+		handleCheckboxChange(e){
+			console.log(e)
+			if(e.detail.value[0] == '同意'){
+				this.agree = true
+			}else{
+				this.agree = false
 			}
 		}
 	}
@@ -161,17 +173,12 @@ export default {
 }
 
 .confirm-btn {
-	width: 100%;
-	height: 80rpx;
-	background-color: #007AFF;
-	color: #fff;
-	font-size: 32rpx;
-	border-radius: 10rpx;
-	line-height: 80rpx;
-}
-
-.confirm-btn[disabled] {
-	background-color: #e6e6e6;
-	color: #999;
-}
+		width: 100%;
+		height: 80rpx;
+		background-color: #007AFF;
+		color: #fff;
+		font-size: 32rpx;
+		border-radius: 10rpx;
+		line-height: 80rpx;
+	}
 </style>
