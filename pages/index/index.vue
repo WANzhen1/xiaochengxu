@@ -3,7 +3,10 @@
 		<!-- 轮播图 -->
 		<swiper class="swiper" indicator-dots autoplay interval="3000">
 			<swiper-item v-for="(item, index) in swiperList" :key="index">
-				<view class="swiper-item">{{ item.title }}</view>
+				<view class="swiper-item">
+					<image :src="item.image" mode="aspectFill" style="width: 100%; height: 100%; position: absolute;"></image>
+					<view class="swiper-text-overlay">{{ item.title }}</view>
+				</view>
 			</swiper-item>
 		</swiper>
 
@@ -101,14 +104,14 @@ import request from '../../utils/request';
 
 export default {
   data() {
-	swiperList: [
-		{ title: '欢迎使用在线挂号系统', image: 'https://pub-3afdbd2f517445e789d079e4de4b7f91.r2.dev/2026/01/20/%E5%8C%BB%E9%99%A21.png' },
-		{ title: '在线预约，省时省心', image: 'https://pub-3afdbd2f517445e789d079e4de4b7f91.r2.dev/2026/01/20/%E5%8C%BB%E9%99%A22.png' },
-		{ title: '专家团队，专业诊疗', image: 'https://pub-3afdbd2f517445e789d079e4de4b7f91.r2.dev/2026/01/20/%E5%8C%BB%E9%99%A23.png' }
-		]
     return {
       departmentList: [],
       doctorList: [],
+      swiperList: [
+        { title: '欢迎使用在线挂号系统', image: 'https://pub-3afdbd2f517445e789d079e4de4b7f91.r2.dev/2026/01/20/%E5%8C%BB%E9%99%A21.png' },
+        { title: '在线预约，省时省心', image: 'https://pub-3afdbd2f517445e789d079e4de4b7f91.r2.dev/2026/01/20/%E5%8C%BB%E9%99%A22.png' },
+        { title: '专家团队，专业诊疗', image: 'https://pub-3afdbd2f517445e789d079e4de4b7f91.r2.dev/2026/01/20/%E5%8C%BB%E9%99%A23.png' }
+      ],
       hospitalServices: [
         { title: '医院介绍', path: '/pages/hospital-intro/hospital-intro', iconPath:'/static/icon/yiyuanjieshao.png'},
         { title: '医院导航', path: '/pages/hospital-map/hospital-map', iconPath:'/static/icon/yiyuandaohang.png' },
@@ -206,13 +209,22 @@ export default {
 	}
 
 	.swiper-item {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		color: white;
-		font-size: 40rpx;
-		font-weight: bold;
-	}
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				color: white;
+				font-size: 40rpx;
+				font-weight: bold;
+				position: relative;
+				height: 100%;
+			}
+
+			.swiper-text-overlay {
+				background-color: rgba(0, 0, 0, 0.5);
+				padding: 20rpx 40rpx;
+				border-radius: 10rpx;
+				z-index: 1;
+			}
 
 	/* 服务section */
 	.service-section {
