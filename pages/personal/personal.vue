@@ -23,7 +23,7 @@ export default {
 		return {
 			menuItems: [
 				{ title: '我的预约' },
-				{ title: '我的缴费' },
+				{ title: '我的缴费' ,path:'/pages/payment/payment'},
 				{ title: '我的病历' },
 				{ title: '我的消息' },/* 这里写预约成功的时间，未缴费信息 */
 				{ title: '设置' },
@@ -39,9 +39,20 @@ export default {
 	methods: {
 		// 页面跳转方法
 		navigateTo(url) {
-		uni.navigateTo({
-			url: url
-		});
+			// 检查是否是tabBar页面
+			const tabBarPages = ['/pages/index/index', '/pages/payment/payment', '/pages/personal/personal'];
+			
+			if (tabBarPages.includes(url)) {
+				// 跳转到tabBar页面
+				uni.switchTab({
+					url: url
+				});
+			} else {
+				// 跳转到普通页面
+				uni.navigateTo({
+					url: url
+				});
+			}
 		},
 		// 获取用户信息
 		getUserInfo() {
