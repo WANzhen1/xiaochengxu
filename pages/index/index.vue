@@ -102,9 +102,9 @@ import request from '../../utils/request';
 export default {
   data() {
 	swiperList: [
-		{ title: '欢迎使用在线挂号系统', image: 'https://pub-3afdbd2f517445e789d079e4de4b7f91.r2.dev/315A1644C7CA5C41E234877495581981.jpg' },
-		{ title: '在线预约，省时省心', image: 'https://pub-3afdbd2f517445e789d079e4de4b7f91.r2.dev/315A1644C7CA5C41E234877495581981.jpg' },
-		{ title: '专家团队，专业诊疗', image: 'https://pub-3afdbd2f517445e789d079e4de4b7f91.r2.dev/315A1644C7CA5C41E234877495581981.jpg' }
+		{ title: '欢迎使用在线挂号系统', image: 'https://pub-3afdbd2f517445e789d079e4de4b7f91.r2.dev/2026/01/20/%E5%8C%BB%E9%99%A21.png' },
+		{ title: '在线预约，省时省心', image: 'https://pub-3afdbd2f517445e789d079e4de4b7f91.r2.dev/2026/01/20/%E5%8C%BB%E9%99%A22.png' },
+		{ title: '专家团队，专业诊疗', image: 'https://pub-3afdbd2f517445e789d079e4de4b7f91.r2.dev/2026/01/20/%E5%8C%BB%E9%99%A23.png' }
 		]
     return {
       departmentList: [],
