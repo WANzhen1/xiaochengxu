@@ -8,7 +8,7 @@
 		<view class="form-section">
 			<view class="input-item">
 				<text class="input-label">账号</text>
-				<input type="number" v-model="phone" placeholder="请输入账号" class="input" />
+				<input  v-model="phone" placeholder="请输入账号" class="input" />
 			</view>
 			
 			<view class="input-item">
